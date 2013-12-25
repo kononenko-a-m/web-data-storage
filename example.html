@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test of cross-domain local storage</title>
+        <meta charset="UTF-8">
+        <script type="text/javascript" src="src/web-storage.js"></script>
+    </head>
+    <body>
+        <div>Test of cross-domain local storage</div>
+        <script>
+            webStorage.init('http://localhost/src/container.html', function () {
+                webStorage.setItem('key', 'test', function () {
+                    webStorage.getItem('key', function (e, result) {
+                       console.log(result); 
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>

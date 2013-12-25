@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"></head><body><script>
+/*!
+ * WebStorage JavaScript Library v1.0.0
+ * https://github.com/anton-kononenko/web-data-storage
+ *
+ * Author: Anton Kononenko <kononenko.a.m@gmail.com>
+ *
+ * Released under the MIT license
+ * https://github.com/anton-kononenko/web-data-storage/blob/master/LICENSE 
+ */
+
+(function (global, allowedOrigins) {
+    'use strict';
+
+    var storage = global.localStorage,
+        isTrusted = false,
+        hostOrigin = global.name,
+        hostScope = global.parent !== global ? global.parent : null;
+
+    allowedOrigins.forEach(function (origin) {
+        if (!isTrusted) {
+            if ((origin instanceof RegExp && origin.test(hostOrigin)) 
+                || (typeof origin === 'string' && origin === hostOrigin)) {          
+
+                isTrusted = true;
+            }
+        }
+    });
+
+    function receiveMessageHandler (event) {
+        if (event.origin === hostOrigin) {
+            var data = event.data,
+                callSignature = data.callSignature;
+
+            try {
+                if (data.args !== null) {
+                    respond(null, storage[data.prop].apply(storage, data.args), callSignature);
+                } else {
+                    respond(null, storage[data.prop], callSignature);
+                }
+            } catch (e) {
+                respond(e, null, callSignature);
+            } 
+        }
+    }
+
+    function respond(e, result, callSignature) {
+        hostScope.postMessage({ 
+            error: e ? e.toString() : null,
+            result: result,
+            callSignature: callSignature 
+        }, hostOrigin);
+    }
+
+    if (isTrusted && hostScope !== null) {
+        global.addEventListener('message', receiveMessageHandler , false);
+        hostScope.postMessage({ init: true }, hostOrigin);
+    }
+}(window, [
+    /**
+     * List of allowed origins,
+     * can contain reg exp, or strings
+     * Example:
+     * [
+     *  'http://localhost',
+     *  'https://localhost',
+     *  /^http:\/\/.+\.dev$/
+     * ]
+     */
+    /localhost/
+]));
+</script></body></html>
