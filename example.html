@@ -7,14 +7,28 @@
     </head>
     <body>
         <div>Test of cross-domain local storage</div>
-        <script>
-            webStorage.init('http://localhost/src/container.html', function () {
-                webStorage.setItem('key', 'test', function () {
-                    webStorage.getItem('key', function (e, result) {
-                       console.log(result); 
+        <script type="text/javascript">
+            if (window.Promise) {
+                //Promise based usage
+                webStorage.init('http://localhost/src/container.html')
+                    .then(function () {
+                        return webStorage.value('key', {field: 'test value'});
+                    })
+                    .then(function () {
+                        return webStorage.value('key');
+                    })
+                    .then(function (value) {
+                        console.log(value); 
+                    })
+            } else {
+                webStorage.init('http://localhost/src/container.html', function () {
+                    webStorage.setItem('key', 'test', function () {
+                        webStorage.getItem('key', function (e, result) {
+                           console.log(result); 
+                        });
                     });
                 });
-            });
+            }
         </script>
     </body>
 </html>
