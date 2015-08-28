@@ -34,7 +34,7 @@ webStorage.removeItem (key[, callback]) - check localStorage documentation
     
 webStorage.clear ([callback]) - check localStorage documentation
 
-webStorage.value(key[, value[, callback]]) - simplified access to local storage, will make transformation to/from JSON on write/read
+webStorage.value(key[, value][, callback]) - simplified access to local storage, will make transformation to/from JSON on write/read
 
 callback : Function - into function will be passed two arguments
 - e : Error - error which happens during execution of current call
