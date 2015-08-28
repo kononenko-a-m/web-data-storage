@@ -110,11 +110,12 @@
     };
     
     webStorage.value = function (key, value, callback) {
-        if (typeof value === 'function') {
+        var isGetter = arguments.length === 1 || (arguments.length === 2 && typeof value === 'function');
+        if (isGetter && value) {
             callback = value;
         }
         return createPromise(function (fulfill) {
-            if (typeof value === 'function') {
+            if (isGetter) {
                 webStorage.getItem(key, function (value) {
                     try {
                         value = JSON.parse(value);
